@@ -7,7 +7,7 @@ const TodoItem = ({ todo, toggleComplete, removeTodo, updateStatus }) => {
   };
 
   return (
-    <div className="flex justify-between items-center bg-white p-4 rounded shadow-md mb-2">
+    <div className="flex justify-between items-center bg-gray-100 p-4 rounded shadow-md mb-2">
       <input 
         type="checkbox" 
         checked={todo.completed}
