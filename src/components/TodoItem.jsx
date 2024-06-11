@@ -15,7 +15,7 @@ const TodoItem = ({ todo, toggleComplete, removeTodo, updateStatus }) => {
         className="mr-2"
       />
       <span className={`flex-1 ${todo.completed ? 'line-through' : ''}`}>
-        {todo.text} (Vence: {todo.dueDate}) - Asignada a: {todo.assignedTo}
+        {todo.text} (Vence: {new Date(todo.dueDate).toLocaleString()}) - Asignada a: {todo.assignedTo}
       </span>
       <select
         value={todo.status}
