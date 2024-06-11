@@ -12,7 +12,7 @@ const TodoList = () => {
   }, [todos]);
 
   const addTodo = () => {
-    if (!input || !dueDate || !assignedTo) return;
+    if (!input) return;
     setTodos([...todos, { id: Date.now(), text: input, dueDate, assignedTo, completed: false, status: 'pending' }]);
     setInput('');
     setDueDate('');
@@ -22,30 +22,30 @@ const TodoList = () => {
   return (
     <div className="container mx-auto mt-10 max-w-md">
       <h1 className="text-2xl font-bold text-center mb-4">Lista de Tareas</h1>
-      <div className="flex flex-col space-y-2 mb-4">
+      <div className="flex mb-4">
         <input 
           type="text" 
           value={input} 
           onChange={(e) => setInput(e.target.value)} 
-          className="p-2 border border-gray-300 rounded"
+          className="flex-1 p-2 border border-gray-300"
           placeholder="Añadir nueva tarea..."
         />
         <input
-          type="datetime-local"
+          type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="p-2 border border-gray-300 rounded"
+          className="border p-2"
         />
         <input
           type="text"
           value={assignedTo}
           onChange={(e) => setAssignedTo(e.target.value)}
-          className="p-2 border border-gray-300 rounded"
+          className="border p-2"
           placeholder="Asignar a..."
         />
         <button 
           onClick={addTodo} 
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white p-2 hover:bg-blue-600"
         >
           Añadir
         </button>
@@ -54,9 +54,6 @@ const TodoList = () => {
         <TodoItem 
           key={todo.id} 
           todo={todo}
-          toggleComplete={(id) => setTodos(todos.map(todo => todo.id === id ? {...todo, completed: !todo.completed} : todo))}
-          removeTodo={(id) => setTodos(todos.filter(todo => todo.id !== id))}
-          updateStatus={(id, newStatus) => setTodos(todos.map(todo => todo.id === id ? {...todo, status: newStatus} : todo))}
         />
       ))}
     </div>
