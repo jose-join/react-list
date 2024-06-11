@@ -22,9 +22,9 @@ const TodoItem = ({ todo, toggleComplete, removeTodo, updateStatus }) => {
         onChange={(e) => handleStatusChange(e.target.value)}
         className="border rounded p-1 mx-2"
       >
-        <option value="pending">Pendiente</option>
-        <option value="in_progress">En Progreso</option>
-        <option value="completed">Completada</option>
+        <option value="To Do">To Do</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Done">Done</option>
       </select>
       <button onClick={() => removeTodo(todo.id)} className="text-red-500 hover:text-red-700">
         <MdDelete />

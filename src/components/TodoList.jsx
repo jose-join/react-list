@@ -12,22 +12,38 @@ const TodoList = () => {
   }, [todos]);
 
   const addTodo = () => {
-    if (!input) return;
-    setTodos([...todos, { id: Date.now(), text: input, dueDate, assignedTo, completed: false, status: 'pending' }]);
+    if (!input || !dueDate || !assignedTo) return;
+    setTodos([...todos, { id: Date.now(), text: input, dueDate, assignedTo, completed: false, status: 'To Do' }]);
     setInput('');
     setDueDate('');
     setAssignedTo('');
   };
 
+  const updateStatus = (id, newStatus) => {
+    setTodos(todos.map(todo => todo.id === id ? {...todo, status: newStatus} : todo));
+  };
+
+  const removeTodo = id => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const toggleComplete = id => {
+    setTodos(todos.map(todo => todo.id === id ? {...todo, completed: !todo.completed} : todo));
+  };
+
+  const getColumnTodos = (status) => {
+    return todos.filter(todo => todo.status === status);
+  };
+
   return (
-    <div className="container mx-auto mt-10 max-w-md">
-      <h1 className="text-2xl font-bold text-center mb-4">Lista de Tareas</h1>
+    <div className="container mx-auto mt-10">
+      <h1 className="text-2xl font-bold text-center mb-4">Scrum Board</h1>
       <div className="flex mb-4">
         <input 
           type="text" 
           value={input} 
           onChange={(e) => setInput(e.target.value)} 
-          className="flex-1 p-2 border border-gray-300"
+          className="flex-1 p-2 border border-gray-300 rounded-l"
           placeholder="Añadir nueva tarea..."
         />
         <input
@@ -45,17 +61,49 @@ const TodoList = () => {
         />
         <button 
           onClick={addTodo} 
-          className="bg-blue-500 text-white p-2 hover:bg-blue-600"
+          className="bg-blue-500 text-white p-2 rounded-r hover:bg-blue-600"
         >
           Añadir
         </button>
       </div>
-      {todos.map(todo => (
-        <TodoItem 
-          key={todo.id} 
-          todo={todo}
-        />
-      ))}
+      <div className="flex">
+        <div className="w-1/3 p-2">
+          <h2 className="text-lg font-bold mb-2">To Do</h2>
+          {getColumnTodos('To Do').map(todo => (
+            <TodoItem 
+              key={todo.id} 
+              todo={todo}
+              toggleComplete={toggleComplete}
+              removeTodo={removeTodo}
+              updateStatus={updateStatus}
+            />
+          ))}
+        </div>
+        <div className="w-1/3 p-2">
+          <h2 className="text-lg font-bold mb-2">In Progress</h2>
+          {getColumnTodos('In Progress').map(todo => (
+            <TodoItem 
+              key={todo.id} 
+              todo={todo}
+              toggleComplete={toggleComplete}
+              removeTodo={removeTodo}
+              updateStatus={updateStatus}
+            />
+          ))}
+        </div>
+        <div className="w-1/3 p-2">
+          <h2 className="text-lg font-bold mb-2">Done</h2>
+          {getColumnTodos('Done').map(todo => (
+            <TodoItem 
+              key={todo.id} 
+              todo={todo}
+              toggleComplete={toggleComplete}
+              removeTodo={removeTodo}
+              updateStatus={updateStatus}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
