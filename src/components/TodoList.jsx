@@ -1,6 +1,7 @@
 // TodoList.js
 import React, { useState, useEffect } from 'react';
 import TodoItem from './TodoItem';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const TodoList = () => {
   const [todos, setTodos] = useState(JSON.parse(localStorage.getItem('todos')) || []);
@@ -36,6 +37,25 @@ const TodoList = () => {
     return todos.filter(todo => todo.status === status);
   };
 
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    if (source.droppableId !== destination.droppableId) {
+      const newTodos = [...todos];
+      const [movedTodo] = newTodos.splice(source.index, 1);
+      movedTodo.status = destination.droppableId;
+      newTodos.splice(destination.index, 0, movedTodo);
+      setTodos(newTodos);
+    } else {
+      const newTodos = [...todos];
+      const [movedTodo] = newTodos.splice(source.index, 1);
+      newTodos.splice(destination.index, 0, movedTodo);
+      setTodos(newTodos);
+    }
+  };
+
   return (
     <div className="container mx-auto mt-10">
       <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Scrum Board</h1>
@@ -67,44 +87,43 @@ const TodoList = () => {
           Añadir
         </button>
       </div>
-      <div className="flex space-x-4">
-        <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold mb-4 text-gray-700">To Do</h2>
-          {getColumnTodos('To Do').map(todo => (
-            <TodoItem 
-              key={todo.id} 
-              todo={todo}
-              toggleComplete={toggleComplete}
-              removeTodo={removeTodo}
-              updateStatus={updateStatus}
-            />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex space-x-4">
+          {['To Do', 'In Progress', 'Done'].map((status, index) => (
+            <Droppable key={status} droppableId={status}>
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md"
+                >
+                  <h2 className="text-xl font-bold mb-4 text-gray-700">{status}</h2>
+                  {getColumnTodos(status).map((todo, index) => (
+                    <Draggable key={todo.id} draggableId={String(todo.id)} index={index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <TodoItem 
+                            key={todo.id} 
+                            todo={todo}
+                            toggleComplete={toggleComplete}
+                            removeTodo={removeTodo}
+                            updateStatus={updateStatus}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
           ))}
         </div>
-        <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold mb-4 text-gray-700">In Progress</h2>
-          {getColumnTodos('In Progress').map(todo => (
-            <TodoItem 
-              key={todo.id} 
-              todo={todo}
-              toggleComplete={toggleComplete}
-              removeTodo={removeTodo}
-              updateStatus={updateStatus}
-            />
-          ))}
-        </div>
-        <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold mb-4 text-gray-700">Done</h2>
-          {getColumnTodos('Done').map(todo => (
-            <TodoItem 
-              key={todo.id} 
-              todo={todo}
-              toggleComplete={toggleComplete}
-              removeTodo={removeTodo}
-              updateStatus={updateStatus}
-            />
-          ))}
-        </div>
-      </div>
+      </DragDropContext>
     </div>
   );
 };
